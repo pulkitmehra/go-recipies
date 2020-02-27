@@ -8,5 +8,9 @@ import (
 
 func main() {
 	fmt.Println(simple.Hello())
-	simple.CopyArrayAndSlice([]int{1, 2, 3, 4}, []int{5, 6, 7, 8})
+	simple.FnMain()
+	/* simple.CopyArrayAndSlice([]int{1, 2, 3, 4}, []int{5, 6, 7, 8})
+	simple.SortMain()
+	simple.PointerMain()
+	simple.StringMain() */
 }
