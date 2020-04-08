@@ -1,17 +1,42 @@
 package main
 
 import (
-	"github.com/pulkitmehra/go-recipies/pkg/simple"
-	"github.com/pulkitmehra/go-recipies/pkg/web"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	grpc_hw "github.com/pulkitmehra/go-recipies/pkg/grpc/helloworld"
+)
+
+var (
+	errorCh  = make(chan error, 1)
+	signalCh = make(chan os.Signal, 1)
 )
 
 func main() {
+	go grpc_hw.MainGrpc(errorCh)
+	waitForEvent()
+}
 
-	simple.FnMain()
-	web.MainWeb()
+func waitForEvent() {
 
-	/* simple.CopyArrayAndSlice([]int{1, 2, 3, 4}, []int{5, 6, 7, 8})
-	simple.SortMain()
-	simple.PointerMain()
-	simple.StringMain() */
+	signal.Notify(
+		signalCh,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGKILL,
+		syscall.SIGQUIT,
+	)
+	fmt.Println("use ctr+c to quit")
+	fmt.Println()
+	select {
+	case sig := <-signalCh:
+		log.Printf("OS shutdown signal: %v", sig)
+	case err := <-errorCh:
+		log.Println(err)
+		panic(err)
+	}
+	log.Println("Server Exit")
 }
